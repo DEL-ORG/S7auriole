@@ -1,11 +1,14 @@
 #!/bin/bash
-kubens s7auriole
-helm delete shop-product 
-helm delete shop-web 
-helm delete shop-reviews 
-helm delete redis-ha-au
-helm delete postgres-ha-au 
-helm delete argo-cd-au
+kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
+kubectl delete crd alertmanagers.monitoring.coreos.com
+kubectl delete crd podmonitors.monitoring.coreos.com
+kubectl delete crd probes.monitoring.coreos.com
+kubectl delete crd prometheusagents.monitoring.coreos.com
+kubectl delete crd prometheuses.monitoring.coreos.com
+kubectl delete crd prometheusrules.monitoring.coreos.com
+kubectl delete crd scrapeconfigs.monitoring.coreos.com
+kubectl delete crd servicemonitors.monitoring.coreos.com
+kubectl delete crd thanosrulers.monitoring.coreos.com
 echo "---------------------------------------------------------------------------------------------------------------------"
 kubectl delete pvc data-postgres-ha-au-postgresql-ha-postgresql-0
 kubectl delete pvc data-postgres-ha-au-postgresql-ha-postgresql-1 
