@@ -2173,7 +2173,7 @@ prometheusOperator:
         ## Service type
         ## NodePort, ClusterIP, LoadBalancer
         ##
-        type: ClusterIP
+        type: NodePort
 
         ## List of IP addresses at which the Prometheus server service is available
         ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
@@ -2456,7 +2456,7 @@ prometheusOperator:
   ## Service type
   ## NodePort, ClusterIP, LoadBalancer
   ##
-    type: ClusterIP
+    type: NodePort
 
     ## List of IP addresses at which the Prometheus server service is available
     ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
@@ -2902,7 +2902,7 @@ prometheus:
 
     ## Service type
     ##
-    type: ClusterIP
+    type: NodePort
 
     ## Additional ports to open for Prometheus service
     ##
