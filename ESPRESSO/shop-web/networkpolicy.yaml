@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web-backend-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: espresso-shop-web
+  policyTypes:
+  - Ingress
+  ingress:
+  - {}

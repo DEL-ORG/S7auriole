@@ -1,0 +1,90 @@
+version: '3'
+
+services:
+  db:
+    image: devopseasylearning/tarzan-db:v0.0.1
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
+    hostname: db
+    networks:
+      explorer:
+        aliases:
+          - db
+    volumes:
+      - ./db-data:/var/lib/mysql
+
+  weather:
+    image: devopseasylearning/tarzan-weather:v0.0.1
+    restart: always
+    environment:
+      - APIKEY=ecbc396f46mshb65cbb1f82cf334p1fcc87jsna5e962a3c542
+    hostname: weather
+    networks:
+      explorer:
+        aliases:
+          - weather
+    ports:
+      - "5000:5000" 
+
+  auth:
+    image: devopseasylearning/tarzan-auth:v0.0.1
+    restart: always
+    environment:
+      - DB_HOST=db
+      - DB_PASSWORD=my-secret-pw
+      - DB_PORT=3306
+    ports:
+      - "8080:8080"
+    hostname: auth
+    networks:
+      explorer:
+        aliases:
+          - auth
+
+  ui:
+    image: devopseasylearning/tarzan-ui:v0.0.1
+    restart: always
+    environment:
+      - AUTH_HOST=auth
+      - AUTH_PORT=8080
+      - WEATHER_HOST=weather
+      - WEATHER_PORT=5000
+      - REDIS_HOST=redis
+      - REDIS_USER=redis
+      - REDIS_PASSWORD=redis
+    expose:
+      - "3000"
+    ports:
+      - "3000:3000"
+    hostname: ui
+    networks:
+      explorer:
+        aliases:
+          - ui
+
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass redis
+    volumes:
+      - redis:/data
+    environment:
+      - REDIS-USER=redis
+      - REDIS_PASSWORD=redis
+    hostname: redis
+    networks:
+      explorer:
+        aliases:
+          - redis
+ 
+
+volumes:
+  redis:
+    driver: local
+  db-data:
+networks:
+  explorer:
