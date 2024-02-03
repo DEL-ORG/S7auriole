@@ -103,7 +103,7 @@ readinessProbe:
 service:
   annotations: {}
   labels: {}
-  type: ClusterIP
+  type: NodePort
   port: 9093
   clusterPort: 9094
   loadBalancerIP: ""  # Assign ext IP when Service type is LoadBalancer
@@ -271,22 +271,22 @@ configAnnotations: {}
 
 config:
   enabled: true
-  global: {}
-    # slack_api_url: ''
+  global: 
+      slack_api_url: 'https://hooks.slack.com/services/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'
 
   templates:
     - '/etc/alertmanager/*.tmpl'
 
   receivers:
-    - name: default-receiver
-      # slack_configs:
-      #  - channel: '@you'
-      #    send_resolved: true
+    - name: 'slack-notification' 
+      slack_configs:
+         - channel: 'Auriole Tamegnon'
+           send_resolved: true
 
   route:
     group_wait: 10s
     group_interval: 5m
-    receiver: default-receiver
+    receiver: 'slack-notification'
     repeat_interval: 3h
 
 ## Monitors ConfigMap changes and POSTs to a URL
