@@ -712,29 +712,40 @@ scrapeConfigFiles: []
 serverFiles:
   ## Alerts configuration
   ## Ref: https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/
-  alerting_rules.yml: 
+  alerting_rules.yml:
     groups:
-      - name: Server
+      - name: unheathy pods
         rules:
-          - alert: ServerDown
-            expr: up == 0
+          - alert: unheathy pods
+            expr: min_over_time(sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"})[15m:1m]) > 0
             for: 1m
             labels:
               severity: page
             annotations:
               description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minutes.'
               summary: 'Server {{ $labels.instance }} down'
-      - name: podCreationAlerts
+      - name: podCrashing
         rules:
-          - alert: PodCreationAlert
-            expr: |
-              changes(kube_pod_start_time) > 0
+          - alert: PodCrashingAlert
+            expr: increase(kube_pod_container_status_restarts_total[3m]) > 2
+
             for: 1m
             labels:
-              severity: warning
+              severity: page
             annotations:
               summary: "New pod {{ $labels.pod }} created"
               description: "A new pod {{ $labels.pod }} has been created. Verify if this is expected and matches the deployment strategy."
+      - name: podnotready
+        rules:
+          - alert: Podnotready
+            expr: sum by (namespace) (kube_pod_status_ready{condition="false"}) > 2
+            for: 1m
+            labels:
+              severity: page
+            annotations:
+              summary: "New pod {{ $labels.pod }} created"
+              description: "A new pod {{ $labels.pod }} has been created. Verify if this is expected and matches the deployment strategy."
+
 
   ## DEPRECATED DEFAULT VALUE, unless explicitly naming your files, please use alerting_rules.yml
   alerts: {}
