@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-backup
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-backup
+  template:
+    metadata:
+      labels:
+        app: postgres-backup
+    spec:
+      containers:
+      - name: postgres-backup
+        image: your-docker-image:tag
+        envFrom:
+        - configMapRef:
+            name: postgres-config
+        - secretRef:
+            name: aws-secret
+
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: postgres-backup-cronjob
+spec:
+  schedule: "*/3 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: postgres-backup
+            image: your-docker-image:tag
+            envFrom:
+            - configMapRef:
+                name: postgres-config
+            - secretRef:
+                name: aws-secret
+          restartPolicy: OnFailure
+

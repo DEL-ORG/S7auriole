@@ -1,0 +1,21 @@
+# Use a base image with necessary tools
+FROM ubuntu:latest
+
+# Install required packages
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    awscli
+
+# Set backup directory
+ENV BACKUP_DIR=/backup
+
+# Create backup directory 
+Run mkdir -p $BAKUP_DIR
+
+# Create backup script
+COPY backup_script.sh /backup_script.sh
+RUN chmod +x /backup_script.sh
+
+# Set entry point
+ENTRYPOINT ["/backup_script.sh"]
+

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+data:
+  PG_USERNAME: postgres
+  PG_PASSWORD: postgres
+  PG_HOST: database-1.chky8i8mglsr.us-east-1.rds.amazonaws.com
+  PG_PORT: "5432"
+  PG_DATABASE: s6-user
+  BACKUP_DIR: /del-db-backup/s6/s7auriole
+
