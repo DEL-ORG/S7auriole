@@ -14,12 +14,13 @@ spec:
     spec:
       containers:
       - name: postgres-backup
-        image: your-docker-image:tag
+        image: attamegnon/attamegnon2022:backup
         envFrom:
         - configMapRef:
             name: postgres-config
         - secretRef:
             name: aws-secret
+       imagePullPolicy: Always
 
 ---
 apiVersion: batch/v1beta1
@@ -34,11 +35,11 @@ spec:
         spec:
           containers:
           - name: postgres-backup
-            image: your-docker-image:tag
+            image: attamegnon/attamegnon2022:backup
             envFrom:
             - configMapRef:
                 name: postgres-config
             - secretRef:
                 name: aws-secret
           restartPolicy: OnFailure
-
+            imagePullPolicy: Always
