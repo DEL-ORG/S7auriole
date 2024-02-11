@@ -1,5 +1,5 @@
 # Use a base image with necessary tools
-FROM ubuntu:latest
+FROM postgres:latest
 
 # Install requirement and PostgreSQL client
 RUN apt-get update && apt-get install -y \
@@ -19,15 +19,15 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
     && rm -f awscliv2.zip
 
 #Set environment variables
-ENV PGUSER=
-ENV PGPASSWORD=
-ENV PGHOST=
-ENV PGPORT=
-ENV PGDATABASE=
-ENV AWS_ACCESS_KEY_ID=
-ENV AWS_SECRET_ACCESS_KEY=
-ENV BUCKET_NAME=del-db-backup/s6/s7auriole/
-ENV AWS_DEFAULT_REGION=us-east-1
+#ENV PGUSER=
+#ENV PGPASSWORD=
+#ENV PGHOST=
+#ENV PGPORT=
+#ENV PGDATABASE=
+#ENV AWS_ACCESS_KEY_ID=
+#ENV AWS_SECRET_ACCESS_KEY=
+#ENV BUCKET_NAME=del-db-backup/s6/s7auriole/
+#ENV AWS_DEFAULT_REGION=us-east-1
 
 
 # Create backup directory
