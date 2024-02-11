@@ -12,3 +12,4 @@
  aws s3 cp $BACKUP_FILE  s3://del-db-backup/S6/s7auriole/
  
 
+
