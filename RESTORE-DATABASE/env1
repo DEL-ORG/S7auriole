@@ -1,0 +1,5 @@
+#Environment variables for PostgreSQL
+ENV POSTGRES_USER=practice
+ENV POSTGRES_PASSWORD=practice
+ENV POSTGRES_DB=s7auriole
+
