@@ -11,12 +11,16 @@ echo "installing tree & curl****************************************************
 sudo apt-get install tree -y
 sudo apt-get install curl -y
 echo "installing docker & docker-compose************************************************************************************************************************************************************"
-sudo apt install docker.io -y
-sudo systemctl enable docker
+sudo apt-get update -y
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+apt-cache policy docker-ce
+sudo apt install docker-ce
 sudo systemctl status docker
-mkdir -p ~/.docker/cli-plugins/
-curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
-chmod +x ~/.docker/cli-plugins/docker-compose
+sudo usermod -aG docker ${ubuntu}
+sudo apt-get update -y
+sudo apt-get install docker-compose-plugin
 docker compose version
 echo "installing mysql************************************************************************************************************************************************************"
 sudo apt install mysql-server
