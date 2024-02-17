@@ -14,7 +14,7 @@ imagePullSecrets: []
 # - name: "image-pull-secret"
 
 ## replicas number for each component
-replicas: 3
+replicas: 1
 
 ## Customize the statefulset pod management policy:
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
