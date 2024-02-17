@@ -17,13 +17,14 @@ pipeline {
         sh 'node --version'
       }
     }
-    stage('mid-end') {
+    stage('Mid-end') {
       agent {
         docker { image 'mysql:latest' }
       }
-      Steps {
-         sh 'mysql --version'
+      steps {
+        sh 'mysql --version'
       }
     }
   }
 }
+
