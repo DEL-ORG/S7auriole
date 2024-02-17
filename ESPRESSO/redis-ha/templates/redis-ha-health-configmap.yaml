@@ -18,13 +18,3 @@ data:
 {{- include "redis_readiness.sh" . }}
   sentinel_liveness.sh: |
 {{- include "sentinel_liveness.sh" . }}
-
-
-
-
-
-
-
-
-
-

@@ -3,8 +3,8 @@
 ##
 image:
   repository: redis
-  tag: 7.0.9-alpine3.17
-  pullPolicy: Always
+  tag: 7.2.4-alpine
+  pullPolicy: IfNotPresent
 
 ## Reference to one or more secrets to be used when pulling images
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -31,9 +31,8 @@ ro_replicas: ""
 # priorityClassName: ""
 
 ## Custom labels for the redis pod
-labels:
-  release: prometheus
-   
+labels: {}
+
 ## Custom labels for redis service
 serviceLabels: {}
 
@@ -80,10 +79,16 @@ haproxy:
     enabled: false
     port: 6380
   replicas: 3
+  # -- Deployment strategy for the haproxy deployment
+  deploymentStrategy:
+    type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 25%
+    #   maxUnavailable: 25%
   image:
     repository: haproxy
-    tag: 2.6.9
-    pullPolicy: Always
+    tag: 2.9.4-alpine
+    pullPolicy: IfNotPresent
 
   ## Custom labels for the haproxy pod
   labels: {}
@@ -102,10 +107,9 @@ haproxy:
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget: {}
-    # Use only one of the two
-    # maxUnavailable: 1
-    # minAvailable: 1
-
+  # Use only one of the two
+  # maxUnavailable: 1
+  # minAvailable: 1
 
   ## Enable sticky sessions to Redis nodes via HAProxy
   ## Very useful for long-living connections as in case of Sentry for example
@@ -117,6 +121,7 @@ haproxy:
   service:
     type: ClusterIP
     loadBalancerIP:
+    externalIPs: {}
     labels: {}
     annotations: null
 
@@ -146,9 +151,11 @@ haproxy:
       # Set path to redis-exporter telemtery-path
       # telemetryPath: /metrics
       # Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator
-      # labels: {}
+      labels: {}
       # Set timeout for scrape
       # timeout: 10s
+      # Set additional properties for the ServiceMonitor endpoints such as relabeling, scrapeTimeout, tlsConfig, and more.
+      endpointAdditionalProperties: {}
   init:
     resources: {}
   timeout:
@@ -185,10 +192,10 @@ haproxy:
   ## Custom config-haproxy.cfg files used to override default settings. If this file is
   ## specified then the config-haproxy.cfg above will be ignored.
   # customConfig: |-
-    # Define configuration here
+  # Define configuration here
   ## Place any additional configuration section to add to the default config-haproxy.cfg
   # extraConfig: |-
-    # Define configuration here
+  # Define configuration here
 
   ## Container lifecycle hooks
   ## Ref: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
@@ -201,6 +208,31 @@ haproxy:
   ## Enable HAProxy parameters to bind and consume IPv6 addresses. Enabled by default.
   IPv6:
     enabled: true
+
+  networkPolicy:
+    ## whether NetworkPolicy for Haproxy should be created
+    enabled: false
+    annotations: {}
+    labels: {}
+    ## user defines ingress rules that Haproxy should permit into
+    ## uses the format defined in https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
+    ingressRules: []
+    # - selectors:
+    #   - namespaceSelector:
+    #       matchLabels:
+    #         name: my-redis-client-namespace
+    #     podSelector:
+    #       matchLabels:
+    #         application: redis-client
+    ## if ports is not defined then it defaults to the ports defined for enabled services (redis, sentinel)
+    #   ports:
+    #     - port: 6379
+    #       protocol: TCP
+    #     - port: 26379
+    #       protocol: TCP
+
+    ## user can define egress rules too, uses the same structure as ingressRules
+    egressRules: []
 
 ## Role Based Access
 ## Ref: https://kubernetes.io/docs/admin/authorization/rbac/
@@ -230,7 +262,7 @@ sysctlImage:
 ## Redis specific configuration options
 redis:
   port: 6379
-  masterGroupName: "mymaster"       # must match ^[\\w-\\.]+$) and can be templated
+  masterGroupName: "mymaster" # must match ^[\\w-\\.]+$) and can be templated
 
   ## Configures redis with tls-port parameter
   # tlsPort: 6385
@@ -261,16 +293,16 @@ redis:
     failureThreshold: 5
 
   disableCommands:
-    - FLUSHDB
-    - FLUSHALL
+  - FLUSHDB
+  - FLUSHALL
 
   config:
     ## Additional redis conf options can be added below
     ## For all available options see http://download.redis.io/redis-stable/redis.conf
     min-replicas-to-write: 1
-    min-replicas-max-lag: 5   # Value in seconds
-    maxmemory: "0"       # Max memory to use for each redis instance. Default is unlimited.
-    maxmemory-policy: "volatile-lru"  # Max memory policy to use for each redis instance. Default is volatile-lru.
+    min-replicas-max-lag: 5 # Value in seconds
+    maxmemory: "0" # Max memory to use for each redis instance. Default is unlimited.
+    maxmemory-policy: "volatile-lru" # Max memory policy to use for each redis instance. Default is volatile-lru.
     # Determines if scheduled RDB backups are created. Default is false.
     # Please note that local (on-disk) RDBs will still be created when re-syncing with a new slave. The only way to prevent this is to enable diskless replication.
     save: "900 1"
@@ -282,14 +314,14 @@ redis:
   ## Custom redis.conf files used to override default settings. If this file is
   ## specified then the redis.config above will be ignored.
   # customConfig: |-
-    # Define configuration here
+  # Define configuration here
 
-  resources: 
-     requests:
-       memory: 100Mi
-       cpu: 50m
-     limits:
-       memory: 350Mi
+  resources: {}
+  #  requests:
+  #    memory: 200Mi
+  #    cpu: 100m
+  #  limits:
+  #    memory: 700Mi
 
   ## Container lifecycle hooks
   ## Ref: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/
@@ -369,7 +401,7 @@ sentinel:
   ## Custom sentinel.conf files used to override default settings. If this file is
   ## specified then the sentinel.config above will be ignored.
   # customConfig: |-
-    # Define configuration here
+  # Define configuration here
 
   resources: {}
   #  requests:
@@ -471,7 +503,7 @@ topologySpreadConstraints:
 exporter:
   enabled: false
   image: oliver006/redis_exporter
-  tag: v1.43.0
+  tag: v1.57.0
   pullPolicy: IfNotPresent
 
   # prometheus port & scrape path
@@ -528,9 +560,11 @@ exporter:
     # Set path to redis-exporter telemtery-path
     # telemetryPath: /metrics
     # Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator
-    # labels: {}
+    labels: {}
     # Set timeout for scrape
     # timeout: 10s
+    # Set additional properties for the ServiceMonitor endpoints such as relabeling, scrapeTimeout, tlsConfig, and more.
+    endpointAdditionalProperties: {}
 
   # prometheus exporter SCANS redis db which can take some time
   # allow different probe settings to not let container crashloop
@@ -546,9 +580,9 @@ exporter:
     successThreshold: 2
 
 podDisruptionBudget: {}
-  # Use only one of the two
-  # maxUnavailable: 1
-  # minAvailable: 1
+# Use only one of the two
+# maxUnavailable: 1
+# minAvailable: 1
 
 ## Configures redis with AUTH (requirepass & masterauth conf params)
 auth: false
@@ -572,7 +606,7 @@ persistentVolume:
   ##
   # storageClass: "-"
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   size: 10Gi
   annotations: {}
   labels: {}
@@ -647,16 +681,16 @@ prometheusRule:
   interval: 10s
   # prometheusRule.rules -- Rules spec template (see https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#rule).
   rules: []
-    # Example:
-    # - alert: RedisPodDown
-    #   expr: |
-    #     redis_up{job="{{ include "redis-ha.fullname" . }}"} == 0
-    #   for: 5m
-    #   labels:
-    #     severity: critical
-    #   annotations:
-    #     description: Redis pod {{ "{{ $labels.pod }}" }} is down
-    #     summary: Redis pod {{ "{{ $labels.pod }}" }} is down
+  # Example:
+  # - alert: RedisPodDown
+  #   expr: |
+  #     redis_up{job="{{ include "redis-ha.fullname" . }}"} == 0
+  #   for: 5m
+  #   labels:
+  #     severity: critical
+  #   annotations:
+  #     description: Redis pod {{ "{{ $labels.pod }}" }} is down
+  #     summary: Redis pod {{ "{{ $labels.pod }}" }} is down
 
 extraInitContainers: []
 #  - name: extraInit
@@ -680,19 +714,19 @@ networkPolicy:
   ## user defines ingress rules that Redis should permit into
   ## uses the format defined in https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors
   ingressRules: []
-    # - selectors:
-    #   - namespaceSelector:
-    #       matchLabels:
-    #         name: my-redis-client-namespace
-    #     podSelector:
-    #       matchLabels:
-    #         application: redis-client
-    ## if ports is not defined then it defaults to the ports defined for enabled services (redis, sentinel)
-    #   ports:
-    #     - port: 6379
-    #       protocol: TCP
-    #     - port: 26379
-    #       protocol: TCP
+  # - selectors:
+  #   - namespaceSelector:
+  #       matchLabels:
+  #         name: my-redis-client-namespace
+  #     podSelector:
+  #       matchLabels:
+  #         application: redis-client
+  ## if ports is not defined then it defaults to the ports defined for enabled services (redis, sentinel)
+  #   ports:
+  #     - port: 6379
+  #       protocol: TCP
+  #     - port: 26379
+  #       protocol: TCP
 
   ## user can define egress rules too, uses the same structure as ingressRules
   egressRules: []
