@@ -15,7 +15,7 @@ pipeline {
             steps {
                 script {
                     dir('ESPRESSO/shop-product') {
-                        sh 'helm install shop-product --namespace auriole .'
+                        sh 'helm install shop-product .'
                     }
                 }
             }
@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     dir('ESPRESSO/shop-review') {
-                        sh 'helm install shop-review --namespace auriole .'
+                        sh 'helm install shop-review  .'
                     }
                 }
             }
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     dir('ESPRESSO/shop-web') {
-                        sh 'helm upgrade install shop-web --namespace auriole .'
+                        sh 'helm upgrade install shop-web  .'
                     }
                 }
             }
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
                     dir('ESPRESSO/redis-ha') {
-                        sh 'helm upgrade install redis-ha --namespace auriole .'
+                        sh 'helm upgrade install redis-ha  .'
                     }
                 }
             }
@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     dir('ESPRESSO/postgresh-ha') {
-                        sh 'helm upgrade install postgres-ha --namespace auriole .'
+                        sh 'helm upgrade install postgres-ha  .'
                     }
                 }
             }
