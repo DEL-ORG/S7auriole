@@ -17,6 +17,7 @@ pipeline {
                     script {
                         dir('ESPRESSO/shop-product') {
                             sh 'helm install shop-product .'
+                        echo 'Building shop-prodcut...'
                         }
                     }
                 }
@@ -29,6 +30,7 @@ pipeline {
                     script {
                         dir('ESPRESSO/shop-review') {
                             sh 'helm install shop-review .'
+                        echo 'Building shop-review...'
                         }
                     }
                 }
@@ -41,6 +43,7 @@ pipeline {
                     script {
                         dir('ESPRESSO/shop-web') {
                             sh 'helm install shop-web  .'
+                        echo 'Building shop-web...'
                         }
                     }
                 }
@@ -53,6 +56,7 @@ pipeline {
                     script {
                         dir('ESPRESSO/redis-ha') {
                             sh 'helm install redis-ha .'
+                        echo 'Building redis-ha...'
                         }
                     }
                 }
@@ -63,18 +67,43 @@ pipeline {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script {
-                        dir('ESPRESSO/postgres') {
+                        dir('ESPRESSO/postgresql-ha') {
                             sh 'helm install postgresql-ha  .'
+                        echo 'Building postgresql-ha...'
                         }
                     }
                 }
             }
         }
 
-        stage('sleep for 2 minutes') {
+        stage('build Grafana') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        dir('ESPRESSO/grafana') {
+                            sh 'helm install grafana .'
+                        echo 'Building Grafana...'
+                    }
+                }
+            }
+        }
+
+        stage('build Prometheus') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        dir('ESPRESSO/prometheus') {
+                            sh 'helm install prometheus .'
+                        echo 'Building Prometheus...'
+                    }
+                }
+            }
+        }
+
+        stage('sleep for 4 minutes') {
             steps {
                 script {
-                    sleep time: 120, unit: 'SECONDS'
+                    sleep time: 240, unit: 'SECONDS'
                 }
             }
         }
@@ -87,6 +116,8 @@ pipeline {
                     sh 'helm delete shop-web'
                     sh 'helm delete redis-ha'
                     sh 'helm delete postgresql-ha'
+                    sh 'helm delete grafana'
+                    sh 'helm delete prometheus'
                 }
             }
         }
