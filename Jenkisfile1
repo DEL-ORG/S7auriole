@@ -6,16 +6,9 @@ pipeline {
     stages {
         stage('deploy product-shop') {
             steps {
-                dir(
-            }
-        }
-
-        stage('Deploy Helm Chart') {
-            steps {
-                // Change directory to the 'expresso' folder
-                dir('expresso') {
-                    // Run Helm commands to deploy the chart
-                    sh 'helm upgrade --install expresso-chart ./path/to/expresso-chart'
+                dir('ESPRESSO/shop-product') {
+                    sh 'helm install shop-product .'
+            
                 }
             }
         }
