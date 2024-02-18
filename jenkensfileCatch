@@ -17,7 +17,7 @@ pipeline {
                     script {
                         dir('ESPRESSO/shop-product') {
                             sh 'helm install shop-product .'
-                        echo 'Building shop-prodcut...'
+                            echo 'Building shop-product...'
                         }
                     }
                 }
@@ -30,7 +30,7 @@ pipeline {
                     script {
                         dir('ESPRESSO/shop-review') {
                             sh 'helm install shop-review .'
-                        echo 'Building shop-review...'
+                            echo 'Building shop-review...'
                         }
                     }
                 }
@@ -43,7 +43,7 @@ pipeline {
                     script {
                         dir('ESPRESSO/shop-web') {
                             sh 'helm install shop-web  .'
-                        echo 'Building shop-web...'
+                            echo 'Building shop-web...'
                         }
                     }
                 }
@@ -56,7 +56,7 @@ pipeline {
                     script {
                         dir('ESPRESSO/redis-ha') {
                             sh 'helm install redis-ha .'
-                        echo 'Building redis-ha...'
+                            echo 'Building redis-ha...'
                         }
                     }
                 }
@@ -69,7 +69,7 @@ pipeline {
                     script {
                         dir('ESPRESSO/postgresql-ha') {
                             sh 'helm install postgresql-ha  .'
-                        echo 'Building postgresql-ha...'
+                            echo 'Building postgresql-ha...'
                         }
                     }
                 }
@@ -82,7 +82,8 @@ pipeline {
                     script {
                         dir('ESPRESSO/grafana') {
                             sh 'helm install grafana .'
-                        echo 'Building Grafana...'
+                            echo 'Building Grafana...'
+                        }
                     }
                 }
             }
@@ -94,7 +95,8 @@ pipeline {
                     script {
                         dir('ESPRESSO/prometheus') {
                             sh 'helm install prometheus .'
-                        echo 'Building Prometheus...'
+                            echo 'Building Prometheus...'
+                        }
                     }
                 }
             }
@@ -123,4 +125,3 @@ pipeline {
         }
     }
 }
-    }
