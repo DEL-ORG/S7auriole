@@ -54,7 +54,7 @@ pipeline {
         stage('deploy postgres') {
             steps {
                 script {
-                    dir('ESPRESSO/postgresh-ha') {
+                    dir('ESPRESSO/postgresql-ha') {
                         sh 'helm  install postgres-ha  .'
                         sh 'sleep 5'
                         sh 'helm delete shop-product'

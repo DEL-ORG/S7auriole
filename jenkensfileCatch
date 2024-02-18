@@ -1,0 +1,81 @@
+pipeline {
+    agent {
+        kubernetes {
+            containerTemplate {
+                name 'helm'
+                image 'lachlanevenson/k8s-helm:v3.1.1'
+                ttyEnabled true
+                command 'cat'
+            }
+        }
+    }
+
+    stages {
+        stage('deploy shop-product') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        dir('ESPRESSO/shop-product') {
+                            sh 'helm install shop-product .'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('deploy shop-review') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        dir('ESPRESSO/shop-review') {
+                            sh 'helm install shop-review .'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('deploy shop-web') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        dir('ESPRESSO/shop-web') {
+                            sh 'helm install shop-web  .'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('deploy redis-ha') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        dir('ESPRESSO/redis-ha') {
+                            sh 'helm install redis-ha .'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('deploy postgresql-ha') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        dir('ESPRESSO/postgres') {
+                            sh 'helm upgrade --install postgresql-ha  .'
+                            sh 'helm  install postgresql-ha  .'
+                            sh 'sleep 5'
+                            sh 'helm delete shop-product'
+                            sh 'helm delete shop-review'
+                            sh 'helm delete shop-web'
+                            sh 'helm delete postgresql-ha'
+                            sh 'helm delete redis-ha'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
