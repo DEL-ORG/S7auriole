@@ -1,4 +1,4 @@
-{{- range include "prometheus.namespaces" . | fromJsonArray }}
+#{{- range include "prometheus.namespaces" . | fromJsonArray }}
 ---
 apiVersion: {{ template "rbac.apiVersion" $ }}
 kind: RoleBinding
