@@ -93,7 +93,7 @@ pipeline {
             steps {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script {
-                        dir('ESPRESSO/prometheus') {
+                        dir('prometheus') {
                             sh 'helm install prometheus .'
                             echo 'Building Prometheus...'
                         }
