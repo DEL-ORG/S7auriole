@@ -1,0 +1,244 @@
+---
+# Source: espresso/templates/pdb-1.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: shop-review1
+  labels:
+    app: shop-review1
+spec:
+  maxUnavailable: 2
+  selector:
+    matchLabels:
+      app: shop-review1
+---
+# Source: espresso/templates/pdb-2.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: shop-review2
+  labels:
+    app: shop-review2
+spec:
+  maxUnavailable: 2
+  selector:
+    matchLabels:
+      app: shop-review2
+---
+# Source: espresso/templates/serviceaccount-1.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: shop-review1
+  labels:
+    app: shop-review1
+---
+# Source: espresso/templates/serviceaccount-2.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: shop-review2
+  labels:
+    app: shop-review2
+---
+# Source: espresso/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: espresso-shop-reviews
+data:
+  username: postgres
+  password: cG9zdGdyZXM=
+  database: espressoshop
+---
+# Source: espresso/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: espresso-shop-reviews-svc
+  labels:
+    app:  espresso-shop-reviews
+spec:
+  type: NodePort
+  ports:
+    - port: 8092
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    version: v1
+    app: shop-review2
+---
+# Source: espresso/templates/deployment-1.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-review1
+  labels:
+    app: shop-review1
+    release: prometheus
+    version: v1
+spec:
+  minReadySeconds: 5
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+        app: shop-review1
+        release: prometheus
+        version: v1
+  template:
+    metadata:
+      labels:
+        app: shop-review1
+        release: prometheus
+        version: v1
+    spec:
+      imagePullSecrets:
+        - name: imagepull-secret
+      serviceAccountName: shop-review1
+      securityContext:
+        {}
+      containers:
+        - name: espresso
+          securityContext:
+            {}
+          image: "attamegnon/attamegnon2022:espressoreviews"
+          envFrom:
+          - secretRef:
+               name: espresso-shop-reviews
+          env: 
+          - name: SERVICE_VERSION
+            value: v1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+---
+# Source: espresso/templates/deployment-2.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-review2
+  labels:
+    app: shop-review2
+    release: prometheus
+    version: v2
+spec:
+  minReadySeconds: 5
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+        app: shop-review2
+        release: prometheus
+        version: v2
+  template:
+    metadata:
+      labels:
+        app: shop-review2
+        release: prometheus
+        version: v2
+    spec:
+      imagePullSecrets:
+        - name: imagepull-secret
+      serviceAccountName: shop-review1
+      securityContext:
+        {}
+      containers:
+        - name: espresso
+          securityContext:
+            {}
+          image: "attamegnon/attamegnon2022:espressoreviews"
+          envFrom:
+          - secretRef:
+               name: espresso-shop-reviews
+          env: 
+          - name: SERVICE_VERSION
+            value: v2
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+---
+# Source: espresso/templates/hpa-1.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: shop-review1
+  labels:
+    app: shop-review1
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: shop-review1
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+---
+# Source: espresso/templates/hpa-2.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: shop-review2
+  labels:
+    app: shop-review2
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: shop-review2
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
