@@ -45,7 +45,7 @@ pipeline {
             steps {
                 script {
                     dir('ESPRESSO/redis-ha') {
-                        sh 'helm upgrade install redis-ha  .'
+                        sh 'helm  install redis-ha  .'
                     }
                 }
             }
@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     dir('ESPRESSO/postgresh-ha') {
-                        sh 'helm upgrade install postgres-ha  .'
+                        sh 'helm  install postgres-ha  .'
                     }
                 }
             }
