@@ -11,6 +11,16 @@ pipeline {
     }
 
     stages {
+        stage('deploy service Account ClusterRoleBinding') {
+            steps {
+                script {
+                    dir('ESPRESSO') {
+                        sh 'kubectl apply -f rbac-default-read.yaml'
+                    }
+                }
+            }
+        }
+
         stage('deploy product-shop') {
             steps {
                 script {
