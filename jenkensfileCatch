@@ -64,16 +64,29 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script {
                         dir('ESPRESSO/postgres') {
-                            sh 'helm upgrade --install postgresql-ha  .'
-                            sh 'helm  install postgresql-ha  .'
-                            sh 'sleep 5'
-                            sh 'helm delete shop-product'
-                            sh 'helm delete shop-review'
-                            sh 'helm delete shop-web'
-                            sh 'helm delete postgresql-ha'
-                            sh 'helm delete redis-ha'
+                            sh 'helm install postgresql-ha  .'
                         }
                     }
+                }
+            }
+        }
+
+        stage('sleep for 2 minutes') {
+            steps {
+                script {
+                    sleep time: 120, unit: 'SECONDS'
+                }
+            }
+        }
+
+        stage('helm delete releases') {
+            steps {
+                script {
+                    sh 'helm delete shop-product'
+                    sh 'helm delete shop-review'
+                    sh 'helm delete shop-web'
+                    sh 'helm delete redis-ha'
+                    sh 'helm delete postgresql-ha'
                 }
             }
         }
