@@ -6,8 +6,9 @@ pipeline {
     stages {
         stage('deploy product-shop') {
             steps {
+                script {
                 dir('ESPRESSO/shop-product') {
-                    sh 'helm install shop-product .'
+                    sh 'helm upgrate first --install shop-product --namespace auriole .'
             
                 }
             }
@@ -15,4 +16,4 @@ pipeline {
     }
 
    }
-
+}
