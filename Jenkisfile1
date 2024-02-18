@@ -11,33 +11,54 @@ pipeline {
     }
 
     stages {
-        stage('Apply Kubernetes files') {
-            steps {
-                withKubeConfig([credentialsId: 'jenkins', serverUrl: 'https://api.k8s.my-company.com']) {
-                     sh 'kubectl apply -f my-kubernetes-directory'
-                    }
-                }
-            }
-
-        stage('deploy service Account ClusterRoleBinding') {
+        stage('deploy product-shop') {
             steps {
                 script {
-                    dir('ESPRESSO') {
-                        sh 'kubectl apply -f rbac-default-read.yaml'
+                    dir('ESPRESSO/shop-product') {
+                        sh 'helm install shop-product --namespace auriole .'
                     }
                 }
             }
         }
 
-        stage('deploy product-shop') {
+        stage('deploy shop-review') {
             steps {
                 script {
-                    dir('ESPRESSO/shop-product') {
-                        sh 'helm upgrade --install shop-product --namespace auriole .'
+                    dir('ESPRESSO/shop-review') {
+                        sh 'helm install shop-review --namespace auriole .'
+                    }
+                }
+            }
+        }
+
+        stage('deploy shop-web') {
+            steps {
+                script {
+                    dir('ESPRESSO/shop-web') {
+                        sh 'helm upgrade install shop-web --namespace auriole .'
+                    }
+                }
+            }
+        }
+
+        stage('deploy redis-ha') {
+            steps {
+                script {
+                    dir('ESPRESSO/redis-ha') {
+                        sh 'helm upgrade install redis-ha --namespace auriole .'
+                    }
+                }
+            }
+        }
+
+        stage('deploy postgres') {
+            steps {
+                script {
+                    dir('ESPRESSO/postgresh-ha') {
+                        sh 'helm upgrade install postgres-ha --namespace auriole .'
                     }
                 }
             }
         }
     }
 }
-
