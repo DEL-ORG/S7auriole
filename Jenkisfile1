@@ -11,6 +11,16 @@ pipeline {
     }
 
     stages {
+        stage('Apply Kubernetes files') {
+            steps {
+                node {
+                    withKubeConfig([credentialsId: 'jenkins', serverUrl: 'https://api.k8s.my-company.com']) {
+                        sh 'kubectl apply -f my-kubernetes-directory'
+                    }
+                }
+            }
+        }
+
         stage('deploy service Account ClusterRoleBinding') {
             steps {
                 script {
