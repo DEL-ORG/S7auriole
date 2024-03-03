@@ -27,7 +27,7 @@ controller:
   image:
     registry: "docker.io"
     repository: "jenkins/jenkins"
-    # tag: "2.426.3-jdk17"
+    # tag: "2.440.1-jdk17"
     tagLabel: jdk17
     pullPolicy: "Always"
   imagePullSecretName:
@@ -52,7 +52,7 @@ controller:
   # you should revert controller.admin.username to your preferred admin user:
   admin:
     username: "admin"
-    password: "s7auriole"
+    password: "Kathmandu41@"
 
     userKey: jenkins-admin-user
     passwordKey: jenkins-admin-password
@@ -335,6 +335,8 @@ controller:
   # etc.  Best reference is https://<jenkins_url>/configuration-as-code/reference.  The example below creates a welcome message:
   JCasC:
     defaultConfig: true
+    # If true, the init container deletes all the plugin config files and Jenkins Config as Code overwrites any existing configuration
+    overwriteConfiguration: false
     configUrls: []
     # - https://acme.org/jenkins.yaml
     # Remote URL:s for configuration files.
@@ -377,7 +379,7 @@ controller:
       image:
         registry: docker.io
         repository: kiwigrid/k8s-sidecar
-        tag: 1.25.4
+        tag: 1.26.0
       imagePullPolicy: IfNotPresent
       resources: {}
         #   limits:
