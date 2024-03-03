@@ -1,0 +1,111 @@
+
+replicaCount: 2
+
+image:
+  repository: attamegnon/attamegnon2022
+  pullPolicy: Always
+  tag: "espressoreviews"
+
+imagePullSecrets: 
+- name: imagepull-secret 
+
+imagesecret:
+ name: imagepull-secret
+ type: kubernetes.io/dockerconfigjson
+ 
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "shop-review1"
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: NodePort
+  port: 8092
+  targetPort: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 60
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+label: espresso-shop-reviews 
+label1:
+  app: shop-review1
+  version: v1 
+  release: prometheus
+  
+label2:
+  app: shop-review2
+  version: v2
+  release: prometheus
+
+
+variables:
+   reviewkey1: SERVICE_VERSION
+   reviewvalue1: "v1"
+   reviewvalue2: "v2"
+ 
+podDisruptionBudget: 2
+
+minReadySeconds: 5
+strategy: 
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
+
+postgress:
+  username: postgres
+  password: "cG9zdGdyZXM="
+  database: "espressoshop"
+
+
