@@ -28,6 +28,7 @@ source "amazon-ebs" "ubuntu" {
 }
 build {
   name = "ubuntu-20.04-s7auriole"
+  # for the source it means i want to build  what is up in the source
   sources = [
     "source.amazon-ebs.ubuntu"
   ]

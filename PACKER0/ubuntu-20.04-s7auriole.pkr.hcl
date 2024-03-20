@@ -17,7 +17,7 @@ packer {
 #instance_type = "the type of instance"
 #source_ami_filter:
 #name = we need to get the specific id of the image we want to use. Go to the amazon ec2 click lunch ec2 instance then search ubuntu and copy the id with ami
-#ssh_username = here the default username is ubuntu. If it is another inage make sure to search for the default username
+#ssh_username = here the default username is ubuntu. If it is another image make sure to search for the default username
 #build:
 #  name = any name you want to give to the build prefer the same name as ami_name
 # sources = here we are providing the name of the builder we created in the previous step line 20 write exactly the same but separate with . "source.amazon-ebs.ubuntu"
